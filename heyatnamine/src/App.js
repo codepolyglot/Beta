@@ -1,8 +1,10 @@
 import React from "react";
 import { ChakraProvider } from "@chakra-ui/react";
-import WithAction from './WithAction'
+import WithAction from "./WithAction";
 import CallToActionWithVideo from "./CallToActionWithVideo";
 import SplitWithImage from "./SplitWithImage";
+import WithSpeechBubbles from "./WithSpeechBubbles";
+import ThreeTierPricing from "./ThreeTierPricing";
 
 const App = () => {
   return (
@@ -10,6 +12,8 @@ const App = () => {
       <WithAction />
       <CallToActionWithVideo />
       <SplitWithImage />
+      <WithSpeechBubbles />
+      <ThreeTierPricing />
     </ChakraProvider>
   );
 };
