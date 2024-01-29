@@ -1,23 +1,21 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+// Import createApi and fetchBaseQuery from RTK Query
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const heyatNamineApi = createApi({
-  reducerPath: 'heyatNamineApi',
-  baseQuery: fetchBaseQuery({ baseUrl: 'https://heyatnamineapi.co/api/v2/' }),
+  reducerPath: "heyatNamineApi",
+  baseQuery: fetchBaseQuery({ baseUrl: "https://heyatnamineapi.co/api/v2/" }),
   endpoints: (builder) => ({
-    // Define your endpoints here
-    // For example:
-    getPosts: builder.query({
-      query: () => 'posts', // Replace with your actual endpoint path
-    }),
-    createPost: builder.mutation({
-      query: (newPost) => ({
-        url: 'posts',
-        method: 'POST',
-        body: newPost,
+    // ... other endpoints ...
+    // Step 1: Define a new mutation for Google sign-in
+    googleSignIn: builder.mutation({
+      query: (googleToken) => ({
+        url: "auth/google",
+        method: "POST",
+        body: { token: googleToken },
       }),
     }),
   }),
 });
 
-export const { useGetPostsQuery, useCreatePostMutation } = heyatNamineApi;
-export const { reducerPath } = heyatNamineApi;
+// Step 2: Export the new mutation hook
+export const { useGoogleSignInMutation } = heyatNamineApi;

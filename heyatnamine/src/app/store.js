@@ -1,4 +1,3 @@
-// In ./index.js
 import { configureStore, getDefaultMiddleware } from "@reduxjs/toolkit";
 import { heyatNamineApi } from "./heyatNaminApi";
 import { reducer as mainDataReducer } from "./../redux/mainDataSlice"; // Import the reducer

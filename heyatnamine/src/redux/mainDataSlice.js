@@ -1,59 +1,43 @@
-import {
-  createSlice,
-  createAsyncThunk,
-  createEntityAdapter,
-} from "@reduxjs/toolkit";
+// Import necessary functions from Redux Toolkit
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { heyatNamineApi } from "../app/heyatNaminApi";
 
-// Define an async thunk to fetch data from the API
-export const fetchMainData = createAsyncThunk(
-  "mainData/fetchMainData",
-  async () => {
-    const response = await heyatNamineApi.getPosts();
+// Step 1: Define an async thunk for the Google sign-in process
+export const signInWithGoogle = createAsyncThunk(
+  "mainData/signInWithGoogle",
+  async (googleUser) => {
+    const response = await heyatNamineApi.googleSignIn(googleUser);
     return response.data;
   }
 );
 
-const mainDataAdapter = createEntityAdapter({
-  selectId: (data) => data.id,
-  sortComparer: (a, b) => a.timestamp - b.timestamp,
-});
-
+// Step 2: Update the mainDataSlice to handle Google sign-in
 const mainDataSlice = createSlice({
   name: "mainData",
-  initialState: mainDataAdapter.getInitialState({
-    status: "idle",
-    error: null,
-  }),
+  initialState: {
+    // ... other state fields ...
+    user: null, // Step 3: Add a user field to the state
+  },
   reducers: {
-    // Additional synchronous actions can be defined here if needed
-    // For example:
-    // resetMainData: state => {
-    //   mainDataAdapter.removeAll(state);
-    // }
+    // ... other reducers ...
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchMainData.pending, (state) => {
+      // ... other cases ...
+      .addCase(signInWithGoogle.pending, (state) => {
         state.status = "loading";
       })
-      .addCase(fetchMainData.fulfilled, (state, action) => {
+      .addCase(signInWithGoogle.fulfilled, (state, action) => {
         state.status = "succeeded";
-        mainDataAdapter.setAll(state, action.payload);
+        state.user = action.payload; // Store user data
       })
-      .addCase(fetchMainData.rejected, (state, action) => {
+      .addCase(signInWithGoogle.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
       });
   },
 });
 
-// Export the reducer and any actions or selectors you might need
-export const { selectAll: selectAllMainData, selectById: selectMainDataById } =
-  mainDataAdapter.getSelectors((state) => state.mainData);
-export const { reducer, actions } = mainDataSlice;
-
-export default mainDataSlice.reducer
-
-// Example usage of the fetchMainData async thunk in a component:
-// dispatch(fetchMainData());
+// Export the reducer and any actions or selectors needed
+export const { reducer } = mainDataSlice;
+export default reducer;
