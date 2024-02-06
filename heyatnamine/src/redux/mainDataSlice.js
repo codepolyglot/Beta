@@ -1,6 +1,15 @@
 // Import necessary functions from Redux Toolkit
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import {
+  createSlice,
+  createAsyncThunk,
+  createEntityAdapter,
+} from "@reduxjs/toolkit";
 import { heyatNamineApi } from "../app/heyatNaminApi";
+
+const mainDataAdapter = createEntityAdapter({
+  selectId: (data) => data.id,
+  sortComparer: (a, b) => a.date.localeCompare(b.date),
+});
 
 // Step 1: Define an async thunk for the Google sign-in process
 export const signInWithGoogle = createAsyncThunk(
@@ -11,30 +20,42 @@ export const signInWithGoogle = createAsyncThunk(
   }
 );
 
+const mainAdapter = createEntityAdapter({
+  sortComparer: (a, b) => a.id - b.id,
+});
+
 // Step 2: Update the mainDataSlice to handle Google sign-in
 const mainDataSlice = createSlice({
   name: "mainData",
-  initialState: {
-    // ... other state fields ...
-    user: null, // Step 3: Add a user field to the state
-  },
+  initialState: mainDataAdapter.getInitialState(),
   reducers: {
     // ... other reducers ...
+    
   },
   extraReducers: (builder) => {
     builder
-      // ... other cases ...
-      .addCase(signInWithGoogle.pending, (state) => {
-        state.status = "loading";
+      .addMatcher(
+        (action) => action.type.startsWith(heyatNaminApi.reducerPath),
+        (state, action) => {
+          // Handle loading state for all RTK Query actions
+          state.isLoading = action.meta.requestStatus === "pending";
+        }
+      )
+      .addCase(heyatNaminApi.endpoints.googleSignIn.pending, (state) => {
+        // You can handle specific loading state for googleSignIn if needed
       })
-      .addCase(signInWithGoogle.fulfilled, (state, action) => {
-        state.status = "succeeded";
-        state.user = action.payload; // Store user data
-      })
-      .addCase(signInWithGoogle.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.error.message;
-      });
+      .addCase(
+        heyatNaminApi.endpoints.googleSignIn.fulfilled,
+        (state, action) => {
+          state.user = action.payload;
+        }
+      )
+      .addCase(
+        heyatNaminApi.endpoints.googleSignIn.rejected,
+        (state, action) => {
+          // You can handle specific error state for googleSignIn if needed
+        }
+      );
   },
 });
 
