@@ -1,13 +1,16 @@
-import { configureStore, getDefaultMiddleware } from "@reduxjs/toolkit";
-import { heyatNamineApi } from "./heyatNaminApi";
-import { reducer as mainDataReducer } from "./../redux/mainDataSlice"; // Import the reducer
+import { configureStore } from "@reduxjs/toolkit";
+import { heyatNamineApi } from "./heyatNamineApi";
+import { reducer as mainDataReducer } from "../redux/mainDataSlice"; // Corrected import path
+import { setupListeners } from "@reduxjs/toolkit/query/react"; // Adjusted import
+import { getDefaultMiddleware } from "@reduxjs/toolkit";
+
 const store = configureStore({
   reducer: {
     main: mainDataReducer,
-    heyatNamineApi: heyatNamineApi.reducer,
+    [heyatNamineApi.reducerPath]: heyatNamineApi.reducer, // Accessing the reducer path correctly
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(heyatNamineApi.middleware),
 });
 
-export default store;
+export default setupListeners(store.dispatch);
