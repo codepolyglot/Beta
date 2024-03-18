@@ -1,0 +1,62 @@
+import React from 'react';
+import { render, screen, fireEvent } from '@testing-library/react';
+import axios from 'axios';
+import MyComponent from './MyComponent';
+
+jest.mock('axios');
+
+describe('MyComponent', () => {
+  test('should render data from API', async () => {
+    const mockData = {
+      id: 1,
+      name: 'John Doe',
+      email: 'john.doe@example.com',
+    };
+
+    axios.get.mockResolvedValueOnce({ data: mockData });
+
+    render(<MyComponent />);
+
+    await screen.findByText(/Name:/i);
+    expect(screen.getByText(/Name:/i)).toBeInTheDocument();
+    expect(screen.getByText(mockData.name)).toBeInTheDocument();
+    expect(screen.getByText(/Email:/i)).toBeInTheDocument();
+    expect(screen.getByText(mockData.email)).toBeInTheDocument();
+  });
+
+  test('should handle error if API call fails', async () => {
+    const errorMessage = 'Failed to fetch data';
+
+    axios.get.mockRejectedValueOnce(new Error(errorMessage));
+
+    render(<MyComponent />);
+
+    await screen.findByText(/Error:/i);
+    expect(screen.getByText(/Error:/i)).toBeInTheDocument();
+    expect(screen.getByText(errorMessage)).toBeInTheDocument();
+  });
+
+  test('should update name on button click', async () => {
+    const mockData = {
+      id: 1,
+      name: 'John Doe',
+      email: 'john.doe@example.com',
+    };
+
+    axios.get.mockResolvedValueOnce({ data: mockData });
+
+    render(<MyComponent />);
+
+    await screen.findByText(/Name:/i);
+    expect(screen.getByText(mockData.name)).toBeInTheDocument();
+
+    const newName = 'Jane Smith';
+    const nameInput = screen.getByLabelText('Name');
+    const updateButton = screen.getByRole('button', { name: /Update Name/i });
+
+    fireEvent.change(nameInput, { target: { value: newName } });
+    fireEvent.click(updateButton);
+
+    expect(screen.getByText(newName)).toBeInTheDocument();
+  });
+});
